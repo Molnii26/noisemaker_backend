@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt")
 const { config } = require('../config/dotenvConfig')
 const jwt = require('jsonwebtoken')
-const { findByEmail, createUser, findByPostalCode, createAdmin } = require('../models/userModel')
+const { findByEmail, createUser, findByPostalCode, createAdmin, modifyUser, modifyUserInAdmin, deleteUser } = require('../models/userModel')
 
 const cookieOptions = {
     httpOnly: true,
@@ -65,7 +65,92 @@ async function adminRegister(req, res) {
 
 }
 
+async function userDelete(req, res) {
 
+    try {
+        const { User_Id } = req.params
+
+        if (!User_Id) {
+            return res.status(400).json({ error: "Hibás user id" })
+        }
+
+        const delete_user = await deleteUser(User_Id)
+
+        if (delete_user === 0) {
+            return res.status(400).json({ error: "Nem létező felhasználó" })
+        }
+
+        return res.status(201).json({ message: "Sikeres törlés" })
+
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: "Hiba a törlésnél", err })
+    }
+
+}
+
+async function userModifyInAdmin(req, res) {
+
+    try {
+        
+        const { username, email, User_Role } = req.body
+        const { User_Id } = req.params
+        const AllowedRoles = ["Admin", "User"]
+
+        if (!username || !email) {
+            return res.status(400).json({ error: "Minden mezőt tölts ki!" })
+        }
+        const alreadyExists = await findByEmail(email)
+        if (alreadyExists && alreadyExists.User_Id != User_Id) {
+            return res.status(409).json({ error: 'Ez az email már foglalt' })
+        }
+
+        if (!AllowedRoles.includes(User_Role)) {
+            return res.status(400).json({ error: 'Csak Admin vagy User lehet a role' })
+
+        }
+
+        const result = await modifyUserInAdmin(username, email, User_Role, User_Id)
+
+        return res.status(201).json({ message: "Sikeres felhasználó módosítás", affectedRows: result.affectedRows })
+
+    } catch (err) {
+console.log(err);
+        return res.status(500).json({ error: "Hiba a felhasználó módosításban", err })
+    }
+
+}
+
+async function userModify(req, res) {
+
+    try {
+        const { username, email } = req.body
+        const { User_Id } = req.params
+        if (!username || !email) {
+            return res.status(400).json({ error: "Minden mezőt tölts ki!" })
+        }
+
+        const alreadyExists = await findByEmail(email)
+
+        if (alreadyExists && alreadyExists.User_Id != User_Id) {
+            return res.status(409).json({ error: 'Ez az email már foglalt' })
+        }
+
+
+        const result = await modifyUser(username, email, User_Id)
+
+
+
+        return res.status(200).json({ message: "Sikeres felhasználó módosítás", affectedRows: result.affectedRows })
+
+
+    } catch (err) {
+
+        return res.status(500).json({ error: "Hiba a felhasználó módosításban", err })
+    }
+
+}
 
 async function login(req, res) {
     try {
@@ -88,11 +173,11 @@ async function login(req, res) {
             id: userSQL.User_Id, username: userSQL.Username, email: userSQL.Email, role: userSQL.User_Role
         },
             config.JWT_SECRET,
-            {expiresIn: config.JWT_EXPIRES_IN}
+            { expiresIn: config.JWT_EXPIRES_IN }
         )
 
         res.cookie(config.COOKIE_NAME, token, cookieOptions)
-        return res.status(200).json({message: 'Sikeres bejelentkezés'})
+        return res.status(200).json({ message: 'Sikeres bejelentkezés' })
 
 
     } catch (err) {
@@ -150,4 +235,4 @@ async function getCityByPostalCode(req, res) {
         return res.status(500).json({ error: "Hibás irányítószám" })
     }
 }
-module.exports = { register, adminRegister, login, whoAmI, logout, getCityByPostalCode }
+module.exports = { register, adminRegister, userDelete, userModify, userModifyInAdmin, login, whoAmI, logout, getCityByPostalCode }

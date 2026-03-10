@@ -1,4 +1,4 @@
-const { createOrder, createOrderItems } = require('../models/orderModel')
+const { createOrder, createOrderItems, deleteOrder } = require('../models/orderModel')
 
 
 //Rendelés hozzáadása
@@ -68,4 +68,29 @@ async function addOrderItems(req, res) {
 
 }
 
-module.exports = { addOrder, addOrderItems }
+//Rendelés törlése
+async function OrderDelete(req, res) {
+
+    try {
+        const { Order_Id } = req.params
+
+        if (!Order_Id) {
+            return res.status(400).json({ error: "Hibás user id" })
+        }
+
+        const delete_user = await deleteOrder(User_Id)
+
+        if (delete_user === 0) {
+            return res.status(400).json({ error: "Nem létező felhasználó" })
+        }
+
+        return res.status(201).json({ message: "Sikeres törlés" })
+
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: "Hiba a törlésnél", err })
+    }
+}
+
+module.exports = { addOrder, addOrderItems, OrderDelete }

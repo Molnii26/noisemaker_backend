@@ -11,6 +11,15 @@ async function createOrder(User_Id, Order_Status,  PhoneNumber,Postal_Code, City
     return { insertId: result.insertId }
 }
 
+async function deleteOrder(Order_Id) {
+
+    const sql = 'DELETE FROM orders WHERE `orders`.`Order_Id` = ?'
+    const [result] = await db.query(sql, [Order_Id])
+    
+ 
+    return { insertId: result.insertId }
+}
+
 async function createOrderItems(orderId, productId, quantity, price) {
  
     const sql = 'INSERT INTO `order_items`(`Item_Id`, `Order_Id`, `Product_Id`, `Quantity`, `OrderPrice`) VALUES (NULL, ?, ?, ?, ?)'
@@ -20,4 +29,4 @@ async function createOrderItems(orderId, productId, quantity, price) {
     return { insertId: result.insertId }
 }
 
-module.exports= {createOrder, createOrderItems}
+module.exports= {createOrder, createOrderItems, deleteOrder}
