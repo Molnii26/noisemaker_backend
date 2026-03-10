@@ -17,6 +17,19 @@ async function createUser(username, email, hash ) {
     return { insertId: result.insertId }
 }
 
+async function deleteUser(User_Id) {
+
+    const sql = 'DELETE FROM users WHERE `users`.`User_Id` = 1'
+    const [result] = await db.query(sql, [User_Id])
+ 
+    return { insertId: result.insertId }
+}
+
+
+async function modifyUser() {
+    const sql = 'UPDATE `users` SET `User_Id`=,`Username`= ?, `Email`= ?,`PSW`=? ,`User_Role`=? WHERE 1'
+}
+
 //admin fiók létrehozása
 async function createAdmin(username, email, hash ) {
 
