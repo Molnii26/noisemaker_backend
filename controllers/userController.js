@@ -4,13 +4,13 @@ const jwt = require('jsonwebtoken')
 const { findByEmail, createUser, findByPostalCode, createAdmin } = require('../models/userModel')
 
 const cookieOptions = {
-    httpOn: true,
+    httpOnly: true,
     secure: false,
     sameSite: 'lax',
     path: '/',
     maxAge: 1000 * 60 * 60 * 24 * 7
 }
-
+//ads
 async function register(req, res) {
 
     try {
@@ -65,6 +65,8 @@ async function adminRegister(req, res) {
 
 }
 
+
+
 async function login(req, res) {
     try {
         const { email, psw } = req.body
@@ -83,16 +85,14 @@ async function login(req, res) {
         }
 
         const token = jwt.sign({
-            id: userSQL.user_id, username: userSQL.username, email: userSQL.email,
-            psw: userSQL.psw, role: userSQL.role
+            id: userSQL.User_Id, username: userSQL.Username, email: userSQL.Email, role: userSQL.User_Role
         },
             config.JWT_SECRET,
-            { expiresIn: config.JWT_EXPIRES_IN }
+            {expiresIn: config.JWT_EXPIRES_IN}
         )
 
         res.cookie(config.COOKIE_NAME, token, cookieOptions)
-        console.log(config.COOKIE_NAME, token, cookieOptions);
-        return res.status(200).json({ message: 'Sikeres bejelentkezés' })
+        return res.status(200).json({message: 'Sikeres bejelentkezés'})
 
 
     } catch (err) {
@@ -104,15 +104,16 @@ async function login(req, res) {
 }
 
 async function whoAmI(req, res) {
-    const { User_Id, Username, Email, User_Role } = req.user
     try {
+        const { id, username, email, role } = req.user
 
-        return res.status(200).json({ User_Id: User_Id, username: userSQL.username, Email: Email, User_Role: User_Role })
+        return res.status(200).json({
+            User_Id: id, Username: username, Email: email, User_Role: role
+        })
 
     } catch (err) {
         return res.status(500).json({ error: 'whoAmI szerver oldali hiba', err })
     }
-
 }
 
 async function logout(req, res) {
