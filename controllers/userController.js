@@ -235,4 +235,6 @@ async function getCityByPostalCode(req, res) {
         return res.status(500).json({ error: "Hibás irányítószám" })
     }
 }
+
+
 module.exports = { register, adminRegister, userDelete, userModify, userModifyInAdmin, login, whoAmI, logout, getCityByPostalCode }

@@ -8,9 +8,6 @@ const productRoutes = require('./routes/productRoutes')
 const cartRouters = require('./routes/cartRoutes')
 
 
-
-
-
 const app = express()
 const cookieParser = require('cookie-parser')
 
@@ -29,9 +26,6 @@ app.use('/orders/', orderRoutes)
 app.use('/categories/', categoryRoutes)
 app.use('/products/', productRoutes)
 app.use('/cart/', cartRouters)
-
-
-
 
 
 module.exports = app

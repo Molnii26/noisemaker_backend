@@ -14,7 +14,7 @@ router.delete('/deleteUser/:User_Id', auth, userDelete)
 router.put('/userModify/:User_Id', auth, userModify)
 router.put('/userModifyInAdmin/:User_Id', auth, userModifyInAdmin)
 
-router.delete('/deleteOrder/:Order_Id', auth, )
+
 
 
 router.get("/whoami", auth, whoAmI)
