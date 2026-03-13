@@ -39,8 +39,10 @@ async function getProduct(req, res) {
 
 
       const result = await findProductById(Product_Id)
-
-      res.status(201).json(result);
+if (result==0) {
+   return res.status(400).json({error: "Nincs ilyen termék"})
+}
+     return res.status(201).json(result);
 
    } catch (err) {
       console.log(err);

@@ -1,11 +1,11 @@
 
-const { createCart, createCartItems, showCartItems, findCartItem } = require("../models/cartModel")
+const { createCart, createCartItems, findCartById, findCartItem, updateCartItemQuantity, showCartItems } = require("../models/cartModel")
 
 
 async function addCart(req, res) {
 
     try {
-        const { User_Id } = req.user.id
+        const  User_Id  = req.user.id
         const { Product_Id, Quantity } = req.body
 
 
@@ -13,17 +13,17 @@ async function addCart(req, res) {
             return res.status(400).json({ error: "Tölts ki minden mezőt" })
         }
 
-        let cart = await findCartByUserId(User_Id)
+        let cart = await findCartById(User_Id)
         let Cart_Id
 
-        if (!cart) {
+        if (cart.length ===0) {
 
             const result = await createCart(User_Id)
             Cart_Id = result.insertId
 
         } else {
 
-            Cart_Id = cart.Cart_Id
+            Cart_Id = cart[0].Cart_Id
 
         }
 
@@ -31,7 +31,7 @@ async function addCart(req, res) {
 
         if (cartItem) {
 
-            await updateCartItemQuantity(cartItem.CartItem_Id, Quantity)
+            await updateCartItemQuantity(cartItem.Cart_Item_Id, Quantity)
 
         } else {
 
@@ -43,11 +43,8 @@ async function addCart(req, res) {
             message: "Termék hozzáadva a kosárhoz"
         })
 
-   
-
-
 } catch (err) {
-
+console.log(err);
     return res.status(500).json({ error: "Hiba a kosár hozzáadásnál", err })
 }
 
@@ -75,7 +72,7 @@ async function addCartItems(req, res) {
 async function CartItemsShow(req, res) {
 
     try {
-        const User_Id = req.user.id
+        const User_Id = req.params
 
         const result = await showCartItems(User_Id)
 
