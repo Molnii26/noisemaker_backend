@@ -1,28 +1,55 @@
 
-const { createCart, createCartItems, showCartItems } = require("../models/cartModel")
+const { createCart, createCartItems, showCartItems, findCartItem } = require("../models/cartModel")
 
 
 async function addCart(req, res) {
 
     try {
-        const { User_Id } = req.body
+        const { User_Id } = req.user.id
+        const { Product_Id, Quantity } = req.body
 
 
-        if (!User_Id) {
-            return res.status(400).json({ error: "Töltsd ki a mezőt!" })
-        }
-        if (isNaN(User_Id)) {
-            return res.status(400).json({ error: "UserId-hoz számot adj meg" })
+        if (!Product_Id || !Quantity) {
+            return res.status(400).json({ error: "Tölts ki minden mezőt" })
         }
 
+        let cart = await findCartByUserId(User_Id)
+        let Cart_Id
 
-        const { insertId } = await createCart(User_Id)
-        return res.status(201).json({ message: "Sikeres kosár hozzáadás", insertId })
+        if (!cart) {
 
-    } catch (err) {
+            const result = await createCart(User_Id)
+            Cart_Id = result.insertId
 
-        return res.status(500).json({ error: "Hiba a kosár hozzáadásnál", err })
-    }
+        } else {
+
+            Cart_Id = cart.Cart_Id
+
+        }
+
+        const cartItem = await findCartItem(Cart_Id, Product_Id)
+
+        if (cartItem) {
+
+            await updateCartItemQuantity(cartItem.CartItem_Id, Quantity)
+
+        } else {
+
+            await createCartItems(Cart_Id, Product_Id, Quantity)
+
+        }
+
+        return res.status(201).json({
+            message: "Termék hozzáadva a kosárhoz"
+        })
+
+   
+
+
+} catch (err) {
+
+    return res.status(500).json({ error: "Hiba a kosár hozzáadásnál", err })
+}
 
 }
 

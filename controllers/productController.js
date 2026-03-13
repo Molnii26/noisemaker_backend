@@ -1,14 +1,11 @@
 
-const { createProduct } = require('../models/productModel')
+const { createProduct, findProductById } = require('../models/productModel')
 
 
 async function addProduct(req, res) {
    try {
       const { Product_Name, ProductDescription, ProductPrice, Subcategory_Id, Stock } = req.body;
       const ProductIMG = req.file.filename;
-
-
-
 
       if (!Product_Name || !ProductDescription) {
          return res.status(400).json({ error: "Minden mezőt tölts ki!" })
@@ -27,7 +24,7 @@ async function addProduct(req, res) {
          return res.status(400).json({ error: "Kép feltöltése kötelező" });
       }
 
-      const { insertId } = await createProduct(Product_Name, ProductDescription, ProductPrice, ProductIMG, Subcategory_Id,  Stock)
+      const { insertId } = await createProduct(Product_Name, ProductDescription, ProductPrice, ProductIMG, Subcategory_Id, Stock)
 
       res.status(201).json({ message: "Termék sikeresen létrehozva", insertId });
 
@@ -36,4 +33,20 @@ async function addProduct(req, res) {
    }
 }
 
-module.exports = { addProduct }
+async function getProduct(req, res) {
+   try {
+      const {Product_Id} = req.params
+
+
+      const result = await findProductById(Product_Id)
+
+      res.status(201).json(result);
+
+   } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Hiba a termék lekérdezésénél", err });
+   }
+}
+
+
+module.exports = { addProduct, getProduct }
