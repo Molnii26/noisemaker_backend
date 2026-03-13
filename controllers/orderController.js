@@ -1,16 +1,13 @@
-const { createOrder, createOrderItems } = require('../models/orderModel')
+const { createOrder, createOrderItems, deleteOrder, allOrders, myOrders, OrderTotal, ModifyStatus } = require('../models/orderModel')
 
 
 //Rendelés hozzáadása
 async function addOrder(req, res) {
     try {
-        const AllowedStatus = ["Pending", "En route", "Cancelled", "Delivered"]
-        const { User_Id, Order_Status, PhoneNumber, Postal_Code, City, StreetHousenumber } = req.body
+        const User_Id = req.user.id
+        const { PhoneNumber, Postal_Code, City, StreetHousenumber, items } = req.body
 
 
-        if (isNaN(User_Id)) {
-            return res.status(400).json({ error: "A userId csak szám lehet" })
-        }
 
         if (isNaN(Postal_Code)) {
             return res.status(400).json({ error: "Hibás irányítószám" })
@@ -19,31 +16,51 @@ async function addOrder(req, res) {
             return res.status(400).json({ error: "Az irányítószám 4 számból kell hogy álljon" })
         }
 
-        if (!Order_Status || !User_Id || !PhoneNumber || !Postal_Code || !City || !StreetHousenumber) {
+        if (!PhoneNumber || !Postal_Code || !City || !StreetHousenumber) {
             return res.status(400).json({ error: "Töltsd ki minden mezőt!" })
         }
+        const { insertId } = await createOrder(User_Id, PhoneNumber, Postal_Code, City, StreetHousenumber)
 
-        if (!AllowedStatus.includes(Order_Status)) {
-            return res.status(400).json({ error: "Nem megfelelő rendelési állapot" })
+        for (const item of items) {
+
+            await createOrderItems(
+                insertId,
+                item.Product_Id,
+                item.Quantity,
+                item.OrderPrice
+            )
+
         }
 
-        //USER ID VALIDÁLÁS
-
-
-        const { insertId } = await createOrder(User_Id, Order_Status, PhoneNumber, Postal_Code, City, StreetHousenumber)
-
-        return res.status(201).json({ message: "Rendelés sikeresen hozzáadva", insertId })
+        return res.status(201).json({ message: "Rendelés sikeresen hozzáadva", Order_Id: insertId })
 
     } catch (err) {
+        console.log(err);
         return res.status(500).json({ error: "Hiba a rendelés hozzáadásnál" })
     }
 
 
 }
 
+async function TotalOrder(req, res) {
+    try {
+
+        const { Order_Id } = req.params
+
+        const result = await OrderTotal(Order_Id)
+
+        return res.status(200).json({ Order_Id: Order_Id, totalPrice: result.TotalPrice || 0 })
+
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({ error: "Hiba a végösszeg lekérésnél" })
+
+    }
+}
+
 
 //Rendelés itemek hozzáadása
-async function addOrderItems(req, res) {
+/* async function addOrderItems(req, res) {
 
     try {
         const { orderId, productId, quantity, price } = req.body
@@ -66,6 +83,88 @@ async function addOrderItems(req, res) {
 
     }
 
+} */
+
+//Rendelés állapot szerkesztés
+
+async function StatusModify(req, res) {
+    try {
+        const { Order_Status } = req.body
+        const { Order_Id } = req.params
+        const AllowedStatuses = ["Pending", "En route", "Delivered", "Cancelled"]
+
+        if (!AllowedStatuses.includes(Order_Status)) {
+            return res.status(400).json({error: "Nem megfelelő státusz"})
+        }
+
+        const result = await ModifyStatus(Order_Status, Order_Id)
+
+        return res.status(200).json({ message: "Sikeres rendelés állapot módosítás", affectedRows: result.affectedRows })
+
+
+    } catch (err) {
+
+        return res.status(500).json({ error: "Hiba a stástusz módosításban", err })
+    }
 }
 
-module.exports = { addOrder, addOrderItems }
+async function OrderDelete(req, res) {
+
+    try {
+        const { Order_Id } = req.params
+
+        if (!Order_Id) {
+            return res.status(400).json({ error: "Hibás user id" })
+        }
+
+        const delete_order = await deleteOrder(Order_Id)
+
+        if (delete_order === 0) {
+            return res.status(400).json({ error: "Nem létező felhasználó" })
+        }
+
+        return res.status(201).json({ message: "Sikeres törlés" })
+
+
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: "Hiba a törlésnél", err })
+    }
+}
+//Összes rendelés lekérdezése
+async function OrdersAll(req, res) {
+
+    try {
+        const result = await allOrders()
+
+        return res.status(200).json(result)
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'Adatbázis hiba a képek megjelenítésekor' })
+
+    }
+}
+
+
+async function OrdersMine(req, res) {
+
+    try {
+        const User_Id = req.user.id;
+
+        const result = await myOrders(User_Id)
+
+
+
+        if (result == 0) {
+            return res.status(400).json({ error: "Nincsenek rendeléseid" })
+        }
+
+        return res.status(200).json(result)
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'Hiba a rendeléseid lekérésekor' })
+
+    }
+}
+
+module.exports = { addOrder, TotalOrder, OrderDelete, OrdersAll, OrdersMine, StatusModify }

@@ -8,6 +8,8 @@ async function findByEmail(email) {
     return result[0] || null
 
 }
+
+
 //Fiók létrehozása
 async function createUser(username, email, hash ) {
 
@@ -17,18 +19,37 @@ async function createUser(username, email, hash ) {
     return { insertId: result.insertId }
 }
 
+
+
+
+
+//Fiók törlése
 async function deleteUser(User_Id) {
 
-    const sql = 'DELETE FROM users WHERE `users`.`User_Id` = 1'
+    const sql = 'DELETE FROM users WHERE `users`.`User_Id` = ?'
     const [result] = await db.query(sql, [User_Id])
+    
  
     return { insertId: result.insertId }
 }
 
 
-async function modifyUser() {
-    const sql = 'UPDATE `users` SET `User_Id`=,`Username`= ?, `Email`= ?,`PSW`=? ,`User_Role`=? WHERE 1'
+//Fiók szerkesztése
+async function modifyUser(Username, Email, User_Id) {
+    const sql = 'UPDATE `users` SET `Username`= ?, `Email`= ? WHERE User_Id = ?'
+    const [result] = await db.query(sql, [Username, Email, User_Id])
+
+    return {affectedRows: result.affectedRows}
 }
+
+//Fiók szerkesztése adminként
+async function modifyUserInAdmin(Username, Email, User_Role, User_Id) {
+    const sql = 'UPDATE `users` SET `Username`= ?, `Email`= ?, User_Role = ? WHERE User_Id = ?'
+    const [result] = await db.query(sql, [Username, Email, User_Role, User_Id])
+
+    return {affectedRows: result.affectedRows}
+}
+
 
 //admin fiók létrehozása
 async function createAdmin(username, email, hash ) {
@@ -49,4 +70,4 @@ async function findByPostalCode(postalCode) {
 
 
 
-module.exports = { findByEmail, createUser, createAdmin ,findByPostalCode }
+module.exports = { findByEmail, createUser, deleteUser, modifyUser, modifyUserInAdmin, createAdmin ,findByPostalCode }
