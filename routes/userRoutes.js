@@ -1,10 +1,10 @@
 const express = require("express")
-const { register, login, logout, whoAmI, userModify, userDelete ,getCityByPostalCode, adminRegister, userModifyInAdmin } = require("../controllers/userController")
+const { register, login, logout, whoAmI, userModify, userDelete, getCityByPostalCode, adminRegister, userModifyInAdmin } = require("../controllers/userController")
 
-const {auth} = require('../middleware/userMiddleware')
+const { auth } = require('../middleware/userMiddleware')
 
 
-const router= express.Router()
+const router = express.Router()
 
 router.post('/register', register)
 router.post('/adminRegister', adminRegister)
@@ -14,9 +14,6 @@ router.delete('/deleteUser/:User_Id', auth, userDelete)
 router.put('/userModify/:User_Id', auth, userModify)
 router.put('/userModifyInAdmin/:User_Id', auth, userModifyInAdmin)
 
-
-
-
 router.get("/whoami", auth, whoAmI)
 
 router.get('/logout', auth, logout)
@@ -24,4 +21,4 @@ router.get('/logout', auth, logout)
 router.get('/postal/:postalCode', getCityByPostalCode)
 
 
-module.exports=router
+module.exports = router

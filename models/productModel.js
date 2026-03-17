@@ -24,4 +24,20 @@ async function findProductById(Product_Id) {
 }
 
 
-module.exports = { createProduct, findProductById }
+async function productDelete(Product_Id) {
+
+    const sql = 'DELETE FROM `products` WHERE `Product_Id` = ?'
+
+    const [result] = await db.query(sql, [Product_Id])
+
+    return { insertId: result.insertId }
+}
+async function productModify(Product_Name, ProductDescription, ProductPrice, Product_IMG, Subcategory_Id, Stock, Product_Id) {
+
+    const sql = 'UPDATE `products` SET `Product_Name`= ?, `ProductDescription`= ?, `ProductPrice`= ?, `ProductIMG`= ?,`Subcategory_Id`= ? ,`Stock`= ? WHERE Product_Id = ?'
+
+    const [result] = await db.query(sql, [Product_Name, ProductDescription, ProductPrice, Product_IMG, Subcategory_Id, Stock, Product_Id])
+
+    return { insertId: result.insertId }
+}
+module.exports = { createProduct, findProductById, productDelete, productModify }

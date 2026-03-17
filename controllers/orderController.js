@@ -41,7 +41,7 @@ async function addOrder(req, res) {
 
 
 }
-
+//Rendelés végösszege
 async function TotalOrder(req, res) {
     try {
 
@@ -94,7 +94,7 @@ async function StatusModify(req, res) {
         const AllowedStatuses = ["Pending", "En route", "Delivered", "Cancelled"]
 
         if (!AllowedStatuses.includes(Order_Status)) {
-            return res.status(400).json({error: "Nem megfelelő státusz"})
+            return res.status(400).json({ error: "Nem megfelelő státusz" })
         }
 
         const result = await ModifyStatus(Order_Status, Order_Id)
@@ -152,8 +152,6 @@ async function OrdersMine(req, res) {
         const User_Id = req.user.id;
 
         const result = await myOrders(User_Id)
-
-
 
         if (result == 0) {
             return res.status(400).json({ error: "Nincsenek rendeléseid" })

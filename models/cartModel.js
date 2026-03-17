@@ -34,7 +34,7 @@ async function findCartById(User_Id) {
     const [result] = await db.query(sql, [User_Id])
 
 
-    return result
+    return result[0] || null
 }
 
 async function updateCartItemQuantity(Cart_Item_Id, Quantity) {
