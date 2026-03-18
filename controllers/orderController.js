@@ -97,6 +97,10 @@ async function StatusModify(req, res) {
             return res.status(400).json({ error: "Nem megfelelő státusz" })
         }
 
+        if (result.affectedRows===0) {
+            return res.status(400).json({error: "Nincs ilyen rendelés"})
+        }
+        
         const result = await ModifyStatus(Order_Status, Order_Id)
 
         return res.status(200).json({ message: "Sikeres rendelés állapot módosítás", affectedRows: result.affectedRows })

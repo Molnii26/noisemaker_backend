@@ -49,7 +49,7 @@ async function showCartItems(User_Id) {
     const sql = "SELECT products.ProductName, products.ProductPrice, cart_items.Quantity FROM cart_items JOIN cart ON cart.Cart_Id = cart_items.Cart_Id JOIN products ON products.Product_Id = cart_items.Product_Id WHERE cart.User_Id = ?"
     const [result] = await db.query(sql, [User_Id])
 
-    return result
+    return result[0] || null
 }
 
 module.exports = { createCart, createCartItems, findCartById, findCartItem, updateCartItemQuantity, showCartItems }

@@ -1,5 +1,5 @@
 
-const { createProduct, findProductById, productDelete } = require('../models/productModel')
+const { createProduct, findProductById, productDelete, productModify, AllProducts } = require('../models/productModel')
 
 //Termék hozzáadása
 async function addProduct(req, res) {
@@ -71,15 +71,22 @@ async function deleteProduct(req, res) {
 
 async function modifyProduct(req, res) {
    try {
-      const { Product_Name, ProductDescription, ProductPrice, Product_IMG, Subcategory_Id, Stock } = req.body
-      const { Product_Id } = req.params
+      const { Product_Name, ProductDescription, ProductPrice, Subcategory_Id, Stock } = req.body;
+
+      const { Product_Id } = req.params;
+      let ProductIMG = null;
+
+      if (req.file) {
+         ProductIMG = req.file.filename;
+      }
+
+      const result = await productModify(Product_Name, ProductDescription, ProductPrice, ProductIMG, Subcategory_Id, Stock, Product_Id)
 
 
-      const result = await productDelete(Product_Id)
-      if (result == 0) {
+      if (result.affectedRows === 0) {
          return res.status(400).json({ error: "Nincs ilyen termék" })
       }
-      return res.status(201).json({ message: "Sikeres termék módosítás" });
+      return res.status(201).json({ message: "Sikeres termék módosítás", affectedRows: result.affectedRows });
 
    } catch (err) {
       console.log(err);
@@ -87,5 +94,16 @@ async function modifyProduct(req, res) {
    }
 }
 
+async function getAllProducts(req, res) {
+   try {
+      const result = await AllProducts()
 
-module.exports = { addProduct, getProduct, deleteProduct, modifyProduct }
+      return res.status(201).json({ result });
+   } catch (err) {
+      console.log(err);
+      return res.status(500).json({ error: 'Hiba a termékek lekérésénél' })
+
+   }
+}
+
+module.exports = { addProduct, getProduct, deleteProduct, modifyProduct, getAllProducts }

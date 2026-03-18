@@ -1,5 +1,5 @@
 const express = require("express")
-const { addCart,CartItemsShow  } = require("../controllers/cartController")
+const { addCart, CartItemsShow  } = require("../controllers/cartController")
 const { auth } = require('../middleware/userMiddleware')
 
 

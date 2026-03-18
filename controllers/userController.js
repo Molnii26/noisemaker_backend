@@ -93,7 +93,7 @@ async function userDelete(req, res) {
 async function userModifyInAdmin(req, res) {
 
     try {
-        
+
         const { username, email, User_Role } = req.body
         const { User_Id } = req.params
         const AllowedRoles = ["Admin", "User"]
@@ -110,13 +110,16 @@ async function userModifyInAdmin(req, res) {
             return res.status(400).json({ error: 'Csak Admin vagy User lehet a role' })
 
         }
+        if (result.affectedRows === 0) {
+            return res.status(400).json({ error: "Nincs ilyen felhasználó" })
+        }
 
         const result = await modifyUserInAdmin(username, email, User_Role, User_Id)
 
         return res.status(201).json({ message: "Sikeres felhasználó módosítás", affectedRows: result.affectedRows })
 
     } catch (err) {
-console.log(err);
+        console.log(err);
         return res.status(500).json({ error: "Hiba a felhasználó módosításban", err })
     }
 
@@ -136,11 +139,11 @@ async function userModify(req, res) {
         if (alreadyExists && alreadyExists.User_Id != User_Id) {
             return res.status(409).json({ error: 'Ez az email már foglalt' })
         }
-
+        if (result.affectedRows === 0) {
+            return res.status(400).json({ error: "Nincs ilyen felhasználó" })
+        }
 
         const result = await modifyUser(username, email, User_Id)
-
-
 
         return res.status(200).json({ message: "Sikeres felhasználó módosítás", affectedRows: result.affectedRows })
 

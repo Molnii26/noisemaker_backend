@@ -1,4 +1,4 @@
-const { createCategory, createSubcategory, findCategoryById, categoryNameModify, categoryDelete, productCheck, subCategoryCheck } = require("../models/categoryModel")
+const { createCategory, createSubcategory, findCategoryById, categoryNameModify, categoryDelete, findSubcategoryById, subcategoryNameModify } = require("../models/categoryModel")
 
 
 async function addCategory(req, res) {
@@ -50,13 +50,13 @@ async function addSubcategory(req, res) {
 }
 
 //Kategóriához tartozó adatok lekérése Id alapján
-async function getCategory(req, res) {
+async function getCategoryItems(req, res) {
     try {
         const { Category_Id } = req.params
 
         const result = await findCategoryById(Category_Id)
 
-        if (result == 0) {
+        if (result == null) {
             return res.status(400).json({ error: "Nincs ilyen kategória" })
         }
         return res.status(201).json(result);
@@ -67,6 +67,47 @@ async function getCategory(req, res) {
     }
 }
 
+//Alkategóriához tartozó adatok lekérése Id alapján
+async function getSubcategoryItems(req, res) {
+    try {
+        const { Subcategory_Id } = req.params
+
+        const result = await findSubcategoryById(Subcategory_Id)
+
+        if (result == null) {
+            return res.status(400).json({ error: "Nincs ilyen alkategória" })
+        }
+        return res.status(201).json(result);
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: "Hiba az alkategóriához tartozó itemek lekérdezésénél", err });
+    }
+}
+
+async function modifySubcategoryName(req, res) {
+    try {
+        const { Subcategory_Name } = req.body
+        const { Subcategory_Id } = req.params
+
+        const result = await subcategoryNameModify(Subcategory_Name, Subcategory_Id)
+
+        if (result.affectedRows===0) {
+            return res.status(400).json({error: "Nincs ilyen alkategória"})
+        }
+        if (!isNaN(Subcategory_Name)) {
+            return res.status(400).json({ error: "Alkategórianévhez ne számot adj meg" })
+        }
+
+        return res.status(200).json({ message: "Sikeres alkategórianév módosítás", affectedRows: result.affectedRows })
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: "Hiba az Alkategórianév módosításnál", err });
+    }
+}
+
+
 async function modifyCategoryName(req, res) {
     try {
         const { CategoryName } = req.body
@@ -74,8 +115,8 @@ async function modifyCategoryName(req, res) {
 
         const result = await categoryNameModify(CategoryName, Category_Id)
 
-        if (result == 0) {
-            return res.status(400).json({ error: "Nincs ilyen kategória" })
+        if (result.affectedRows===0) {
+            return res.status(400).json({error: "Nincs ilyen kategória"})
         }
         if (!isNaN(CategoryName)) {
             return res.status(400).json({ error: "Kategórianévhez ne számot adj meg" })
@@ -96,7 +137,7 @@ async function deleteCategory(req, res) {
 
         const result = await categoryDelete(Category_Id)
         
-        if (result == 0) {
+        if (result == null) {
             return res.status(400).json({ error: "Nincs ilyen kategória" })
         }
 
@@ -109,4 +150,4 @@ async function deleteCategory(req, res) {
     }
 }
 
-module.exports = { addCategory, addSubcategory, getCategory, modifyCategoryName, deleteCategory }
+module.exports = { addCategory, addSubcategory, getCategoryItems, modifyCategoryName, deleteCategory, getSubcategoryItems, modifySubcategoryName }

@@ -30,6 +30,27 @@ async function findCategoryById(Category_Id) {
     return result[0] || null
 
 }
+async function findSubcategoryById(Subcategory_Id) {
+
+    const sql = 'SELECT * FROM `subcategories` WHERE `Subcategory_Id`= ?'
+
+    const [result] = await db.query(sql, [Subcategory_Id])
+
+
+    return result[0] || null
+
+}
+
+
+async function subcategoryNameModify(Subcategory_Name, Subcategory_Id) {
+
+    const sql = 'UPDATE `subcategories` SET `Subcategory_Name`= ? WHERE `Subcategory_Id` = ?'
+
+    const [result] = await db.query(sql, [Subcategory_Name, Subcategory_Id])
+
+    return { affectedRows: result.affectedRows }
+
+}
 
 async function categoryNameModify(CategoryName, Category_Id) {
 
@@ -52,4 +73,4 @@ async function categoryDelete(Category_Id) {
 }
 
 
-module.exports = { createCategory, createSubcategory, findCategoryById, categoryNameModify, categoryDelete }
+module.exports = { createCategory, createSubcategory, findCategoryById, categoryNameModify, categoryDelete, findSubcategoryById, subcategoryNameModify }
