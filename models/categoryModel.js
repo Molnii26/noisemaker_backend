@@ -30,6 +30,18 @@ async function findCategoryById(Category_Id) {
     return result[0] || null
 
 }
+
+async function AllCategories() {
+
+    const sql = 'SELECT * FROM `categories`'
+
+    const [result] = await db.query(sql)
+
+
+    return result
+
+}
+
 async function findSubcategoryById(Subcategory_Id) {
 
     const sql = 'SELECT * FROM `subcategories` WHERE `Subcategory_Id`= ?'
@@ -39,12 +51,23 @@ async function findSubcategoryById(Subcategory_Id) {
 
     return result[0] || null
 
+
+}
+async function AllSubcategories() {
+
+    const sql = 'SELECT * FROM `subcategories`'
+
+    const [result] = await db.query(sql)
+
+
+    return result
+
 }
 
 
-async function subcategoryNameModify(Subcategory_Name, Subcategory_Id) {
+async function subcategoryModify(Subcategory_Name, Subcategory_Id) {
 
-    const sql = 'UPDATE `subcategories` SET `Subcategory_Name`= ? WHERE `Subcategory_Id` = ?'
+    const sql = 'UPDATE `subcategories` SET Category_Id = ?, `Subcategory_Name`= ? WHERE `Subcategory_Id` = ?'
 
     const [result] = await db.query(sql, [Subcategory_Name, Subcategory_Id])
 
@@ -72,5 +95,16 @@ async function categoryDelete(Category_Id) {
 
 }
 
+async function subcategoryDelete(Subcategory_Id) {
 
-module.exports = { createCategory, createSubcategory, findCategoryById, categoryNameModify, categoryDelete, findSubcategoryById, subcategoryNameModify }
+    const sql = 'DELETE FROM subcategories WHERE `Subcategory_Id` = ?'
+
+    const [result] = await db.query(sql, [Subcategory_Id])
+
+    return { insertId: result.insertId }
+
+}
+
+
+
+module.exports = { createCategory, createSubcategory, findCategoryById, categoryNameModify, categoryDelete, findSubcategoryById, subcategoryModify, subcategoryDelete, AllCategories, AllSubcategories }

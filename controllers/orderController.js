@@ -1,4 +1,4 @@
-const { createOrder, createOrderItems, deleteOrder, allOrders, myOrders, OrderTotal, ModifyStatus } = require('../models/orderModel')
+const { createOrder, createOrderItems, deleteOrder, allOrders, myOrders, OrderTotal, ModifyStatus, findByPostalCode } = require('../models/orderModel')
 
 
 //Rendelés hozzáadása
@@ -169,4 +169,34 @@ async function OrdersMine(req, res) {
     }
 }
 
-module.exports = { addOrder, TotalOrder, OrderDelete, OrdersAll, OrdersMine, StatusModify }
+
+async function getCityByPostalCode(req, res) {
+    try {
+        const { postalCode } = req.params
+
+        if (!postalCode) {
+            return res.status(400).json({ error: "Hibás irányítószám" })
+        }
+
+        if (isNaN(postalCode)) {
+            return res.status(400).json({ error: "Irányítószámhoz számot adj meg!" })
+        }
+
+        const city = await findByPostalCode(postalCode)
+
+        if (!city) {
+            return res.status(404).json({ error: "Nincs ilyen irányítószám" })
+        }
+
+        return res.status(200).json({
+            postalCode,
+            city: city.City
+        })
+
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({ error: "Hibás irányítószám" })
+    }
+}
+
+module.exports = { addOrder, TotalOrder, OrderDelete, OrdersAll, OrdersMine, StatusModify, getCityByPostalCode }

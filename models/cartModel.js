@@ -52,4 +52,16 @@ async function showCartItems(User_Id) {
     return result[0] || null
 }
 
+async function cartDelete(Subcategory_Id) {
+
+    const sql = 'DELETE FROM cart WHERE `Cart_Id` = ?'
+
+    const [result] = await db.query(sql, [Subcategory_Id])
+
+    return { insertId: result.insertId }
+
+}
+
+
+
 module.exports = { createCart, createCartItems, findCartById, findCartItem, updateCartItemQuantity, showCartItems }
