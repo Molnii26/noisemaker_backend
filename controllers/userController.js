@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt")
 const { config } = require('../config/dotenvConfig')
 const jwt = require('jsonwebtoken')
-const { findByEmail, createUser, findByPostalCode, createAdmin, modifyUser, modifyUserInAdmin, deleteUser } = require('../models/userModel')
+const { findByEmail, createUser, createAdmin, modifyUser, modifyUserInAdmin, deleteUser, AllUsers } = require('../models/userModel')
 
 const cookieOptions = {
     httpOnly: true,
@@ -10,7 +10,19 @@ const cookieOptions = {
     path: '/',
     maxAge: 1000 * 60 * 60 * 24 * 7
 }
-//ads
+
+async function getAllUsers(req, res) {
+    try {
+       const result = await AllUsers()
+ 
+       return res.status(201).json({ result });
+    } catch (err) {
+       console.log(err);
+       return res.status(500).json({ error: 'Hiba a termékek lekérésénél' })
+ 
+    }
+ }
+
 async function register(req, res) {
 
     try {
@@ -93,7 +105,7 @@ async function userDelete(req, res) {
 async function userModifyInAdmin(req, res) {
 
     try {
-        
+
         const { username, email, User_Role } = req.body
         const { User_Id } = req.params
         const AllowedRoles = ["Admin", "User"]
@@ -110,13 +122,16 @@ async function userModifyInAdmin(req, res) {
             return res.status(400).json({ error: 'Csak Admin vagy User lehet a role' })
 
         }
+        if (result.affectedRows === 0) {
+            return res.status(400).json({ error: "Nincs ilyen felhasználó" })
+        }
 
         const result = await modifyUserInAdmin(username, email, User_Role, User_Id)
 
         return res.status(201).json({ message: "Sikeres felhasználó módosítás", affectedRows: result.affectedRows })
 
     } catch (err) {
-console.log(err);
+        console.log(err);
         return res.status(500).json({ error: "Hiba a felhasználó módosításban", err })
     }
 
@@ -136,11 +151,11 @@ async function userModify(req, res) {
         if (alreadyExists && alreadyExists.User_Id != User_Id) {
             return res.status(409).json({ error: 'Ez az email már foglalt' })
         }
-
+        if (result.affectedRows === 0) {
+            return res.status(400).json({ error: "Nincs ilyen felhasználó" })
+        }
 
         const result = await modifyUser(username, email, User_Id)
-
-
 
         return res.status(200).json({ message: "Sikeres felhasználó módosítás", affectedRows: result.affectedRows })
 
@@ -201,40 +216,13 @@ async function whoAmI(req, res) {
     }
 }
 
+
 async function logout(req, res) {
     return res.clearCookie(config.COOKIE_NAME, { path: '/' }).status(200).json({ message: 'kijelentkezve' })
 }
 
 
 
-async function getCityByPostalCode(req, res) {
-    try {
-        const { postalCode } = req.params
-
-        if (!postalCode) {
-            return res.status(400).json({ error: "Hibás irányítószám" })
-        }
-
-        if (isNaN(postalCode)) {
-            return res.status(400).json({ error: "Irányítószámhoz számot adj meg!" })
-        }
-
-        const city = await findByPostalCode(postalCode)
-
-        if (!city) {
-            return res.status(404).json({ error: "Nincs ilyen irányítószám" })
-        }
-
-        return res.status(200).json({
-            postalCode,
-            city: city.City
-        })
-
-    } catch (err) {
-        console.log(err)
-        return res.status(500).json({ error: "Hibás irányítószám" })
-    }
-}
 
 
-module.exports = { register, adminRegister, userDelete, userModify, userModifyInAdmin, login, whoAmI, logout, getCityByPostalCode }
+module.exports = { register, adminRegister, userDelete, userModify, userModifyInAdmin, login, whoAmI, logout, getAllUsers }

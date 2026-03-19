@@ -1,4 +1,4 @@
-const { createOrder, createOrderItems, deleteOrder, allOrders, myOrders, OrderTotal, ModifyStatus } = require('../models/orderModel')
+const { createOrder, createOrderItems, deleteOrder, allOrders, myOrders, OrderTotal, ModifyStatus, findByPostalCode } = require('../models/orderModel')
 
 
 //Rendelés hozzáadása
@@ -41,7 +41,7 @@ async function addOrder(req, res) {
 
 
 }
-
+//Rendelés végösszege
 async function TotalOrder(req, res) {
     try {
 
@@ -94,9 +94,13 @@ async function StatusModify(req, res) {
         const AllowedStatuses = ["Pending", "En route", "Delivered", "Cancelled"]
 
         if (!AllowedStatuses.includes(Order_Status)) {
-            return res.status(400).json({error: "Nem megfelelő státusz"})
+            return res.status(400).json({ error: "Nem megfelelő státusz" })
         }
 
+        if (result.affectedRows===0) {
+            return res.status(400).json({error: "Nincs ilyen rendelés"})
+        }
+        
         const result = await ModifyStatus(Order_Status, Order_Id)
 
         return res.status(200).json({ message: "Sikeres rendelés állapot módosítás", affectedRows: result.affectedRows })
@@ -153,8 +157,6 @@ async function OrdersMine(req, res) {
 
         const result = await myOrders(User_Id)
 
-
-
         if (result == 0) {
             return res.status(400).json({ error: "Nincsenek rendeléseid" })
         }
@@ -167,4 +169,34 @@ async function OrdersMine(req, res) {
     }
 }
 
-module.exports = { addOrder, TotalOrder, OrderDelete, OrdersAll, OrdersMine, StatusModify }
+
+async function getCityByPostalCode(req, res) {
+    try {
+        const { postalCode } = req.params
+
+        if (!postalCode) {
+            return res.status(400).json({ error: "Hibás irányítószám" })
+        }
+
+        if (isNaN(postalCode)) {
+            return res.status(400).json({ error: "Irányítószámhoz számot adj meg!" })
+        }
+
+        const city = await findByPostalCode(postalCode)
+
+        if (!city) {
+            return res.status(404).json({ error: "Nincs ilyen irányítószám" })
+        }
+
+        return res.status(200).json({
+            postalCode,
+            city: city.City
+        })
+
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({ error: "Hibás irányítószám" })
+    }
+}
+
+module.exports = { addOrder, TotalOrder, OrderDelete, OrdersAll, OrdersMine, StatusModify, getCityByPostalCode }

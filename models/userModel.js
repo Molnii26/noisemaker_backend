@@ -20,7 +20,16 @@ async function createUser(username, email, hash ) {
 }
 
 
+async function AllUsers() {
 
+    const sql = 'SELECT * FROM `users`'
+
+    const [result] = await db.query(sql)
+
+
+    return result
+
+}
 
 
 //Fiók törlése
@@ -60,14 +69,8 @@ async function createAdmin(username, email, hash ) {
     return { insertId: result.insertId }
 }
 
-//Irányítószám alapján település
-async function findByPostalCode(postalCode) {
-    const sql = 'SELECT City FROM postal_codes WHERE Postal_Code_DB = ?'
-    const [result] = await db.query(sql, [postalCode])
-
-    return result[0] || null
-}
 
 
 
-module.exports = { findByEmail, createUser, deleteUser, modifyUser, modifyUserInAdmin, createAdmin ,findByPostalCode }
+
+module.exports = { findByEmail, createUser, deleteUser, modifyUser, modifyUserInAdmin, createAdmin, AllUsers }

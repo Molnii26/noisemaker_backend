@@ -59,6 +59,13 @@ async function ModifyStatus(Order_Status, Order_Id) {
     return {affectedRows: result.affectedRows}
 
 }
+//Irányítószám alapján település
+async function findByPostalCode(postalCode) {
+    const sql = 'SELECT City FROM postal_codes WHERE Postal_Code_DB = ?'
+    const [result] = await db.query(sql, [postalCode])
+
+    return result[0] || null
+}
 
 
-module.exports= {createOrder, createOrderItems, deleteOrder, allOrders, myOrders, OrderTotal, ModifyStatus}
+module.exports= {createOrder, createOrderItems, deleteOrder, allOrders, myOrders, OrderTotal, ModifyStatus, findByPostalCode}

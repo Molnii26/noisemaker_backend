@@ -34,15 +34,34 @@ async function findCartById(User_Id) {
     const [result] = await db.query(sql, [User_Id])
 
 
-    return result
+    return result[0] || null
 }
 
 async function updateCartItemQuantity(Cart_Item_Id, Quantity) {
 
-    const sql = `UPDATE cart_items SET Quantity = Quantity + ? WHERE CartItem_Id = ?`
+    const sql = `UPDATE cart_items SET Quantity = Quantity + ? WHERE Cart_Item_Id = ?`
     const [result] = await db.query(sql, [Quantity, Cart_Item_Id])
 
     return result
 }
 
-module.exports = { createCart, createCartItems, findCartById, findCartItem, updateCartItemQuantity }
+async function showCartItems(User_Id) {
+    const sql = "SELECT products.ProductName, products.ProductPrice, cart_items.Quantity FROM cart_items JOIN cart ON cart.Cart_Id = cart_items.Cart_Id JOIN products ON products.Product_Id = cart_items.Product_Id WHERE cart.User_Id = ?"
+    const [result] = await db.query(sql, [User_Id])
+
+    return result[0] || null
+}
+
+async function cartDelete(Subcategory_Id) {
+
+    const sql = 'DELETE FROM cart WHERE `Cart_Id` = ?'
+
+    const [result] = await db.query(sql, [Subcategory_Id])
+
+    return { insertId: result.insertId }
+
+}
+
+
+
+module.exports = { createCart, createCartItems, findCartById, findCartItem, updateCartItemQuantity, showCartItems }

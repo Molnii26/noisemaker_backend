@@ -1,7 +1,7 @@
 
-const { createProduct, findProductById } = require('../models/productModel')
+const { createProduct, findProductById, productDelete, productModify, AllProducts } = require('../models/productModel')
 
-
+//Termék hozzáadása
 async function addProduct(req, res) {
    try {
       const { Product_Name, ProductDescription, ProductPrice, Subcategory_Id, Stock } = req.body;
@@ -33,14 +33,18 @@ async function addProduct(req, res) {
    }
 }
 
+
+//Termék lekérése Id alapján
 async function getProduct(req, res) {
    try {
-      const {Product_Id} = req.params
+      const { Product_Id } = req.params
 
 
       const result = await findProductById(Product_Id)
-
-      res.status(201).json(result);
+      if (result == 0) {
+         return res.status(400).json({ error: "Nincs ilyen termék" })
+      }
+      return res.status(201).json(result);
 
    } catch (err) {
       console.log(err);
@@ -48,5 +52,58 @@ async function getProduct(req, res) {
    }
 }
 
+async function deleteProduct(req, res) {
+   try {
+      const { Product_Id } = req.params
 
-module.exports = { addProduct, getProduct }
+
+      const result = await productDelete(Product_Id)
+      if (result == 0) {
+         return res.status(400).json({ error: "Nincs ilyen termék" })
+      }
+      return res.status(201).json({ message: "Sikeres termék törlés" });
+
+   } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Hiba a termék törlésnél", err });
+   }
+}
+
+async function modifyProduct(req, res) {
+   try {
+      const { Product_Name, ProductDescription, ProductPrice, Subcategory_Id, Stock } = req.body;
+
+      const { Product_Id } = req.params;
+      let ProductIMG = null;
+
+      if (req.file) {
+         ProductIMG = req.file.filename;
+      }
+
+      const result = await productModify(Product_Name, ProductDescription, ProductPrice, ProductIMG, Subcategory_Id, Stock, Product_Id)
+
+
+      if (result.affectedRows === 0) {
+         return res.status(400).json({ error: "Nincs ilyen termék" })
+      }
+      return res.status(201).json({ message: "Sikeres termék módosítás", affectedRows: result.affectedRows });
+
+   } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Hiba a termék módosításánál", err });
+   }
+}
+
+async function getAllProducts(req, res) {
+   try {
+      const result = await AllProducts()
+
+      return res.status(201).json({ result });
+   } catch (err) {
+      console.log(err);
+      return res.status(500).json({ error: 'Hiba a termékek lekérésénél' })
+
+   }
+}
+
+module.exports = { addProduct, getProduct, deleteProduct, modifyProduct, getAllProducts }
