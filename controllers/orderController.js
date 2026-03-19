@@ -7,8 +7,6 @@ async function addOrder(req, res) {
         const User_Id = req.user.id
         const { PhoneNumber, Postal_Code, City, StreetHousenumber, items } = req.body
 
-
-
         if (isNaN(Postal_Code)) {
             return res.status(400).json({ error: "Hibás irányítószám" })
         }
