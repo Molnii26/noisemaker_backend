@@ -47,7 +47,7 @@ async function TotalOrder(req, res) {
 
         const result = await OrderTotal(Order_Id)
 
-        return res.status(200).json({ Order_Id: Order_Id, totalPrice: result.TotalPrice || 0 })
+        return res.status(200).json({ Order_Id: Order_Id, totalPrice: result.TotalPrice })
 
     } catch (err) {
         console.log(err)
@@ -95,10 +95,10 @@ async function StatusModify(req, res) {
             return res.status(400).json({ error: "Nem megfelelő státusz" })
         }
 
-        if (result.affectedRows===0) {
-            return res.status(400).json({error: "Nincs ilyen rendelés"})
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Nincs ilyen rendelés" })
         }
-        
+
         const result = await ModifyStatus(Order_Status, Order_Id)
 
         return res.status(200).json({ message: "Sikeres rendelés állapot módosítás", affectedRows: result.affectedRows })
@@ -155,8 +155,8 @@ async function OrdersMine(req, res) {
 
         const result = await myOrders(User_Id)
 
-        if (result == 0) {
-            return res.status(400).json({ error: "Nincsenek rendeléseid" })
+        if (result === 0) {
+            return res.status(404).json({ error: "Nincsenek rendeléseid" })
         }
 
         return res.status(200).json(result)
@@ -186,10 +186,7 @@ async function getCityByPostalCode(req, res) {
             return res.status(404).json({ error: "Nincs ilyen irányítószám" })
         }
 
-        return res.status(200).json({
-            postalCode,
-            city: city.City
-        })
+        return res.status(200).json({ postalCode, city: city.City })
 
     } catch (err) {
         console.log(err)

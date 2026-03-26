@@ -13,15 +13,15 @@ const cookieOptions = {
 
 async function getAllUsers(req, res) {
     try {
-       const result = await AllUsers()
- 
-       return res.status(201).json(result);
+        const result = await AllUsers()
+
+        return res.status(201).json(result);
     } catch (err) {
-       console.log(err);
-       return res.status(500).json({ error: 'Hiba a termékek lekérésénél' })
- 
+        console.log(err);
+        return res.status(500).json({ error: 'Hiba a termékek lekérésénél' })
+
     }
- }
+}
 
 async function register(req, res) {
 
@@ -31,21 +31,19 @@ async function register(req, res) {
             return res.status(400).json({ error: "Minden mezőt tölts ki!" })
         }
 
-
         const alreadyExists = await findByEmail(email)
+
         if (alreadyExists) {
             return res.status(409).json({ error: 'Ezzel az emaillel már regisztráltak' })
         }
+
         const hash = await bcrypt.hash(psw, 15)
 
         const { insertId } = await createUser(username, email, hash)
 
-
         return res.status(201).json({ message: "Sikeres Regisztráció", insertId })
 
-
     } catch (err) {
-        console.log(err);
         return res.status(500).json({ error: "Hiba a regisztrációban", err })
     }
 
@@ -55,20 +53,20 @@ async function adminRegister(req, res) {
 
     try {
         const { username, email, psw } = req.body
-        console.log(username, email, psw);
         if (!username || !email || !psw) {
             return res.status(400).json({ error: "Minden mezőt tölts ki!" })
         }
+
         const alreadyExists = await findByEmail(email)
+
         if (alreadyExists) {
             return res.status(409).json({ error: 'Ezzel az emaillel már regisztráltak' })
         }
-        const hash = await bcrypt.hash(psw, 15)
 
+        const hash = await bcrypt.hash(psw, 15)
         const { insertId } = await createAdmin(username, email, hash)
 
         return res.status(201).json({ message: "Sikeres admin regisztráció", insertId })
-
 
     } catch (err) {
         console.log(err);
@@ -82,21 +80,19 @@ async function userDelete(req, res) {
     try {
         const { User_Id } = req.params
 
-        if (!User_Id) {
-            return res.status(400).json({ error: "Hibás user id" })
+        if (isNaN(User_Id)) {
+            return res.status(400).json({ error: "Hibás felhasználó id" })
         }
 
-        const delete_user = await deleteUser(User_Id)
+        const result = await deleteUser(User_Id)
 
-        if (delete_user === 0) {
-            return res.status(400).json({ error: "Nem létező felhasználó" })
+        if (result.affectedRows == 0) {
+            return res.status(400).json({ error: "Nincs ilyen felhasználó" })
         }
 
-        return res.status(201).json({ message: "Sikeres törlés" })
-
+        return res.status(204).send()
 
     } catch (err) {
-        console.log(err);
         return res.status(500).json({ error: "Hiba a törlésnél", err })
     }
 
@@ -113,22 +109,26 @@ async function userModifyInAdmin(req, res) {
         if (!username || !email) {
             return res.status(400).json({ error: "Minden mezőt tölts ki!" })
         }
+        if (isNaN(User_Id)) {
+            return res.status(400).json({ error: "Hibás felhasználó id" })
+        }
+
+
+        if (!AllowedRoles.includes(User_Role)) {
+            return res.status(400).json({ error: 'Csak Admin vagy User lehet a role' })
+        }
+
         const alreadyExists = await findByEmail(email)
         if (alreadyExists && alreadyExists.User_Id != User_Id) {
             return res.status(409).json({ error: 'Ez az email már foglalt' })
         }
 
-        if (!AllowedRoles.includes(User_Role)) {
-            return res.status(400).json({ error: 'Csak Admin vagy User lehet a role' })
-
-        }
-        if (result.affectedRows === 0) {
+        const result = await modifyUserInAdmin(username, email, User_Role, User_Id)
+        if (result.affectedRows == 0) {
             return res.status(400).json({ error: "Nincs ilyen felhasználó" })
         }
 
-        const result = await modifyUserInAdmin(username, email, User_Role, User_Id)
-
-        return res.status(201).json({ message: "Sikeres felhasználó módosítás", affectedRows: result.affectedRows })
+        return res.status(200).json({ message: "Sikeres felhasználó módosítás", affectedRows: result.affectedRows })
 
     } catch (err) {
         console.log(err);
@@ -151,17 +151,20 @@ async function userModify(req, res) {
         if (alreadyExists && alreadyExists.User_Id != User_Id) {
             return res.status(409).json({ error: 'Ez az email már foglalt' })
         }
-        if (result.affectedRows === 0) {
-            return res.status(400).json({ error: "Nincs ilyen felhasználó" })
-        }
 
         const result = await modifyUser(username, email, User_Id)
+        if (isNaN(User_Id)) {
+            return res.status(400).json({ error: "Hibás felhasználó id" })
+        }
 
+        if (result.affectedRows == 0) {
+            return res.status(400).json({ error: "Nincs ilyen felhasználó" })
+        }
         return res.status(200).json({ message: "Sikeres felhasználó módosítás", affectedRows: result.affectedRows })
 
 
     } catch (err) {
-
+        console.log(err);
         return res.status(500).json({ error: "Hiba a felhasználó módosításban", err })
     }
 
@@ -192,11 +195,10 @@ async function login(req, res) {
         )
 
         res.cookie(config.COOKIE_NAME, token, cookieOptions)
-        return res.status(200).json({ message: 'Sikeres bejelentkezés' })
+        return res.status(201).json({ message: 'Sikeres bejelentkezés' })
 
 
     } catch (err) {
-
         console.log(err);
         return res.status(500).json({ error: 'Bejelentkezési hiba', err })
     }
@@ -207,8 +209,7 @@ async function whoAmI(req, res) {
     try {
         const { id, username, email, role } = req.user
 
-        return res.status(200).json({
-            User_Id: id, Username: username, Email: email, User_Role: role
+        return res.status(200).json({User_Id: id, Username: username, Email: email, User_Role: role
         })
 
     } catch (err) {

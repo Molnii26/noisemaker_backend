@@ -38,9 +38,7 @@ async function addCart(req, res) {
 
         }
 
-        return res.status(201).json({
-            message: "Termék hozzáadva a kosárhoz"
-        })
+        return res.status(201).json({message: "Termék hozzáadva a kosárhoz" })
 
     } catch (err) {
         console.log(err);
@@ -79,7 +77,7 @@ async function CartItemsShow(req, res) {
             return res.status(400).json({ error: "Üres a kosár" })
         }
 
-        return res.status(201).json(result)
+        return res.status(200).json(result)
 
     } catch (err) {
 
@@ -102,7 +100,7 @@ async function deleteCart(req, res) {
             return res.status(400).json({ error: "Nincs kosár" })
         }
 
-        return res.status(200).json({ message: "Sikeres kosár törlés" })
+        return res.status(204).json({ message: "Sikeres kosár törlés" })
 
     } catch (err) {
 
@@ -125,7 +123,7 @@ async function deleteCartItem(req, res) {
             return res.status(404).json({ error: "Nincs ilyen kosár elem" })
         }
 
-        return res.status(200).json({ message: "Termék törölve a kosárból" })
+        return res.status(204).json({ message: "Termék törölve a kosárból" })
 
     } catch (err) {
 

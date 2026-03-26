@@ -59,7 +59,7 @@ async function getCategoryItems(req, res) {
         if (result == null) {
             return res.status(400).json({ error: "Nincs ilyen kategória" })
         }
-        return res.status(201).json(result);
+        return res.status(200).json(result);
 
     } catch (err) {
         console.log(err);
@@ -71,7 +71,7 @@ async function getCategoryAll(req, res) {
     try {
         const result = await AllCategories()
 
-        return res.status(201).json({ result });
+        return res.status(200).json(result);
     } catch (err) {
         console.log(err);
         return res.status(500).json({ error: 'Hiba a kategóriák lekérésénél' })
@@ -89,7 +89,7 @@ async function getSubcategoryItems(req, res) {
         if (result == null) {
             return res.status(400).json({ error: "Nincs ilyen alkategória" })
         }
-        return res.status(201).json(result);
+        return res.status(200).json(result);
 
     } catch (err) {
         console.log(err);
@@ -102,7 +102,7 @@ async function getSubcategoryAll(req, res) {
     try {
         const result = await AllSubcategories()
 
-        return res.status(201).json({ result });
+        return res.status(200).json({ result });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ error: 'Hiba a kategóriák lekérésénél' })
@@ -140,11 +140,11 @@ async function deleteSubcategory(req, res) {
 
         const result = await subcategoryDelete(Subcategory_Id)
 
-        if (result == null) {
+        if (result == 0) {
             return res.status(400).json({ error: "Nincs ilyen alkategória" })
         }
 
-        return res.status(200).json({ message: "Sikeres alkategória törlés" })
+        return res.status(204).json({ message: "Sikeres alkategória törlés" })
 
     } catch (err) {
         if (err.code === "ER_ROW_IS_REFERENCED_2") {
@@ -185,7 +185,7 @@ async function deleteCategory(req, res) {
             return res.status(400).json({ error: "Nincs ilyen kategória" })
         }
 
-        return res.status(200).json({ message: "Sikeres kategória törlés" })
+        return res.status(204).json({ message: "Sikeres kategória törlés" })
 
     } catch (err) {
         if (err.code === "ER_ROW_IS_REFERENCED_2") {

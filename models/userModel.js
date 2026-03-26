@@ -43,7 +43,7 @@ async function deleteUser(User_Id) {
     const sql = 'DELETE FROM users WHERE `users`.`User_Id` = ?'
     const [result] = await db.query(sql, [User_Id])
 
-    return { insertId: result.insertId }
+    return { affectedRows: result.affectedRows }
 }
 
 //Fiók szerkesztése

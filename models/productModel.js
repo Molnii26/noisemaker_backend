@@ -34,7 +34,7 @@ async function productDelete(Product_Id) {
     const sql = 'DELETE FROM `products` WHERE `Product_Id` = ?'
     const [result] = await db.query(sql, [Product_Id])
 
-    return { insertId: result.insertId }
+    return { affectedRows: result.affectedRows }
 }
 
 //Termék módosítása
