@@ -27,7 +27,7 @@ async function deleteOrder(Order_Id) {
     const sql = 'DELETE FROM orders WHERE `orders`.`Order_Id` = ?'
     const [result] = await db.query(sql, [Order_Id])
 
-    return { insertId: result.insertId }
+    return { affectedRows: result.affectedRows }
 }
 
 //Összes rendelés lekérdezése (admin)
@@ -54,7 +54,7 @@ async function OrderTotal(Order_Id) {
     const sql = 'SELECT SUM(Quantity * OrderPrice) AS TotalPrice FROM order_items WHERE Order_Id = ?'
     const [result] = await db.query(sql, [Order_Id])
 
-    return result[0]
+    return result[0] ||null
 }
 
 //Rendelés státuszának módosítása
