@@ -5,8 +5,7 @@ const { auth } = require('../middleware/userMiddleware')
 const router = express.Router()
 
 
-router.get('/CartItems/:Cart_Item_Id', auth, CartItemsShow)
-router.get('/CartItems/:Cart_Item_Id', auth, CartItemsShow)
+router.get('/CartItems', auth, CartItemsShow)
 
 router.post("/addCart", auth, addCart)
 

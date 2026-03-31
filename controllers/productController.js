@@ -102,7 +102,7 @@ async function modifyProduct(req, res) {
          return res.status(400).json({ error: "Az ár nem lehet üres, illetve pozitív egész szám kell hogy legyen" })
       }
 
-      if (isNaN(Stock) || !Number.isInteger(Number(Stock)) || Stock.trim() === "" && Stock !== undefined || Stock < 0) {
+      if (isNaN(Stock) || !Number.isInteger(Number(Stock)) || Stock.trim() === ""  || Stock < 0) {
          return res.status(400).json({ error: "A készlet nem lehet üres, illetve pozitív egész szám kell hogy legyen" })
       }
 

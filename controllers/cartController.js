@@ -1,7 +1,7 @@
-
 const { createCart, createCartItems, findCartById, findCartItem, updateCartItemQuantity, showCartItems, cartDelete, cartDeleteItems, cartModifyItems } = require("../models/cartModel")
 
 
+//Kosár hozzáadása
 async function addCart(req, res) {
 
     try {
@@ -16,10 +16,11 @@ async function addCart(req, res) {
         let cart = await findCartById(User_Id)
         let Cart_Id
 
-        if (!cart) {
+        if (!cart || cart.length === 0) {
 
             const result = await createCart(User_Id)
             Cart_Id = result.insertId
+
 
         } else {
 
@@ -38,7 +39,7 @@ async function addCart(req, res) {
 
         }
 
-        return res.status(201).json({message: "Termék hozzáadva a kosárhoz" })
+        return res.status(201).json({ message: "Termék hozzáadva a kosárhoz" })
 
     } catch (err) {
         console.log(err);
@@ -47,70 +48,53 @@ async function addCart(req, res) {
 
 }
 
-/* async function addCartItems(req, res) {
-
-    try {
-        const { Cart_Id, Product_Id, Quantity } = req.body
-
-
-        if (!Cart_Id || !Product_Id || !Quantity) {
-            return res.status(400).json({ error: "Töltsd ki a mezőt!" })
-        }
-
-        const { insertId } = await createCartItems(Cart_Id, Product_Id, Quantity)
-        return res.status(201).json({ message: "Sikeres kosár items hozzáadás", insertId })
-
-    } catch (err) {
-
-        return res.status(500).json({ error: "Hiba a kosár items hozzáadásnál", err })
-    }
-
-} */
+//Kosár elemeinek lekérdezése
 async function CartItemsShow(req, res) {
 
     try {
-        const User_Id = req.params
-
+        const User_Id = req.user.id
         const result = await showCartItems(User_Id)
 
-        if (result == null) {
+        if (!result || result.length === 0) {
             return res.status(400).json({ error: "Üres a kosár" })
         }
 
         return res.status(200).json(result)
 
     } catch (err) {
-
+        console.log(err);
         return res.status(500).json({ error: "Hiba a kosár lekérésénél", err })
     }
-
 }
 
+//Kosár törlése
 async function deleteCart(req, res) {
 
     try {
 
-        const User_Id = req.user.id
+        const { Cart_Id } = req.params
 
-        const Cart = await findCartById(User_Id)
-        const Cart_Id = Cart.Cart_Id
-        const result = await cartDelete(Cart_Id)
-
-        if (result == null) {
-            return res.status(400).json({ error: "Nincs kosár" })
+        if (!Cart_Id || isNaN(Cart_Id)) {
+            return res.status(400).json({ error: "Hibás kosár id" })
         }
 
-        return res.status(204).json({ message: "Sikeres kosár törlés" })
+        const result = await cartDelete(Cart_Id)
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Nincs ilyen kosár" })
+        }
+
+        return res.status(204).send()
+
 
     } catch (err) {
-
-        return res.status(400).json({ error: "Hiba a kosár törlésnél" })
-
+        console.log(err);
+        return res.status(500).json({ error: "Hiba a kosár törlésnél" })
     }
-
 
 }
 
+//Kosárban lévő item törlése
 async function deleteCartItem(req, res) {
 
     try {
@@ -135,6 +119,7 @@ async function deleteCartItem(req, res) {
 
 }
 
+//Kosár módosítása
 async function modifyCartItem(req, res) {
 
     try {
@@ -142,14 +127,12 @@ async function modifyCartItem(req, res) {
         const { Quantity } = req.body
 
         if (!Quantity || Quantity <= 0) {
-            return res.status(400).json({
-                error: "A mennyiség nem lehet 0 vagy kisebb"
-            })
+            return res.status(400).json({ error: "A mennyiség nem lehet 0 vagy kisebb" })
         }
 
         const result = await cartModifyItems(Quantity, Cart_Item_Id)
 
-        if (result.affectedRows === 0) {
+        if (result.affectedRows == 0) {
             return res.status(404).json({ error: "Nincs ilyen kosár elem" })
         }
         return res.status(200).json({ message: "Kosár frissítve" })
@@ -158,7 +141,6 @@ async function modifyCartItem(req, res) {
         console.log(err)
         return res.status(500).json({ error: "Hiba a kosár módosításánál" })
     }
-
 }
 
 

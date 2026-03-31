@@ -15,7 +15,7 @@ async function getAllUsers(req, res) {
     try {
         const result = await AllUsers()
 
-        return res.status(201).json(result);
+        return res.status(200).json(result);
     } catch (err) {
         console.log(err);
         return res.status(500).json({ error: 'Hiba a termékek lekérésénél' })

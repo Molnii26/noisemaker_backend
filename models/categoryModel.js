@@ -34,7 +34,7 @@ async function AllCategories() {
     const sql = 'SELECT * FROM `categories`'
     const [result] = await db.query(sql)
 
-    return result[0] || null
+    return result
 }
 
 //Kategória megkeresése alkategória Id alapján
@@ -52,7 +52,7 @@ async function AllSubcategories() {
     const sql = 'SELECT * FROM `subcategories`'
     const [result] = await db.query(sql)
 
-    return result[0] || null
+    return result
 }
 
 //Alkategória módosítása
@@ -79,7 +79,7 @@ async function categoryDelete(Category_Id) {
     const sql = 'DELETE FROM categories WHERE `Category_Id` = ?'
     const [result] = await db.query(sql, [Category_Id])
 
-    return { insertId: result.insertId }
+    return { affectedRows: result.affectedRows }
 }
 
 //Alkategória törlése
@@ -88,9 +88,26 @@ async function subcategoryDelete(Subcategory_Id) {
     const sql = 'DELETE FROM subcategories WHERE `Subcategory_Id` = ?'
     const [result] = await db.query(sql, [Subcategory_Id])
 
-    return { insertId: result.insertId }
+    return { affectedRows: result.affectedRows }
+}
+
+//Megkeresi, létezik-e már a kategória
+async function findByCategoryName(CategoryName) {
+
+    const sql = 'SELECT * FROM `categories` WHERE CategoryName = ?'
+    const [result] = await db.query(sql, [CategoryName])
+
+    return result[0] || null
+}
+
+////Megkeresi, létezik-e már a kategória
+async function findBySubcategoryName(Subcategory_Name) {
+
+    const sql = 'SELECT * FROM `subcategories` WHERE Subcategory_Name = ?'
+    const [result] = await db.query(sql, [Subcategory_Name])
+
+    return result[0] || null
 }
 
 
-
-module.exports = { createCategory, createSubcategory, findCategoryById, categoryNameModify, categoryDelete, findSubcategoryById, subcategoryModify, subcategoryDelete, AllCategories, AllSubcategories }
+module.exports = {findBySubcategoryName, findByCategoryName, createCategory, createSubcategory, findCategoryById, categoryNameModify, categoryDelete, findSubcategoryById, subcategoryModify, subcategoryDelete, AllCategories, AllSubcategories }

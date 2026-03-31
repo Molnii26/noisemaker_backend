@@ -37,6 +37,7 @@ async function addOrder(req, res) {
 }
 //Rendelés végösszege
 async function TotalOrder(req, res) {
+
     try {
 
         const { Order_Id } = req.params
@@ -54,10 +55,9 @@ async function TotalOrder(req, res) {
     }
 }
 
-
 //Rendelés állapot szerkesztés
-
 async function StatusModify(req, res) {
+
     try {
         const { Order_Status } = req.body
         const { Order_Id } = req.params
@@ -69,7 +69,7 @@ async function StatusModify(req, res) {
 
         const result = await ModifyStatus(Order_Status, Order_Id)
 
-        if (result.affectedRows === 0) {
+        if (result.affectedRows == 0) {
             return res.status(404).json({ error: "Nincs ilyen rendelés" })
         }
 
@@ -81,18 +81,19 @@ async function StatusModify(req, res) {
     }
 }
 
+//Rendelés törlése
 async function OrderDelete(req, res) {
 
     try {
         const { Order_Id } = req.params
 
-        if (isNaN(Order_Id) || !Order_Id) {
+        if (isNaN(Order_Id)) {
             return res.status(400).json({ error: "Hibás rendelés id" })
         }
         const result = await deleteOrder(Order_Id)
 
-        if (result.affectedRows === 0) {
-            return res.status(400).json({ error: "Nem létező rendelés" })
+        if (result.affectedRows == 0) {
+            return res.status(404).json({ error: "Nem létező rendelés" })
         }
 
         return res.status(204).send()
@@ -102,6 +103,7 @@ async function OrderDelete(req, res) {
         return res.status(500).json({ error: "Hiba a törlésnél", err })
     }
 }
+
 //Összes rendelés lekérdezése
 async function OrdersAll(req, res) {
 
@@ -116,7 +118,7 @@ async function OrdersAll(req, res) {
     }
 }
 
-
+//Saját rendelések lekérdezése
 async function OrdersMine(req, res) {
 
     try {
@@ -124,7 +126,7 @@ async function OrdersMine(req, res) {
 
         const result = await myOrders(User_Id)
 
-        if (result === 0) {
+        if (result == 0) {
             return res.status(404).json({ error: "Nincsenek rendeléseid" })
         }
 
@@ -136,17 +138,13 @@ async function OrdersMine(req, res) {
     }
 }
 
-
+//Lekéri a várost irányítószám alapján
 async function getCityByPostalCode(req, res) {
     try {
         const { postalCode } = req.params
 
-        if (!postalCode) {
+        if (!postalCode || isNaN(postalCode)) {
             return res.status(400).json({ error: "Hibás irányítószám" })
-        }
-
-        if (isNaN(postalCode)) {
-            return res.status(400).json({ error: "Irányítószámhoz számot adj meg!" })
         }
 
         const city = await findByPostalCode(postalCode)
