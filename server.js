@@ -6,5 +6,5 @@ const HOST = config.HOST
 
 
 app.listen(PORT, () =>{
-    console.log(`IP: https://${HOST}`);
+    console.log(`IP: ${HOST}`);
 })
