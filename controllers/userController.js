@@ -1,11 +1,11 @@
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcryptjs")
 const { config } = require('../config/dotenvConfig')
 const jwt = require('jsonwebtoken')
 const { findByEmail, createUser, createAdmin, modifyUser, modifyUserInAdmin, deleteUser, AllUsers } = require('../models/userModel')
 
 const cookieOptions = {
     httpOnly: true,
-    secure: false,
+    secure: true,
     sameSite: 'lax',
     path: '/',
     maxAge: 1000 * 60 * 60 * 24 * 7

@@ -3,8 +3,8 @@ const app = require("./app")
 
 const PORT = config.PORT
 const HOST = config.HOST
-//teszt
 
-app.listen(PORT, HOST, () =>{
-    console.log(`IP: http://${HOST}:${PORT}`);
+
+app.listen(PORT, () =>{
+    console.log(`IP: https://${HOST}`);
 })
