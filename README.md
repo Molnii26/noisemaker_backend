@@ -66,14 +66,14 @@ BACKEND
 ##Adatbázis
 
 
-####Felhasznált eszközök
-[Visual Studio Code](https://code.visualstudio.com)
-[Postman](https://www.postman.com)
-[DrawSQL](https://drawsql.app/login)
-[ChatGPT](https://chatgpt.com)
-[ClaudeAI](https://claude.ai)
-[NPM](https://www.npmjs.com)
-[GitHub](https://github.com)
-[PhpMyAdmin](https://www.phpmyadmin.net)
+#### Felhasznált eszközök
+- [Visual Studio Code](https://code.visualstudio.com)
+- [Postman](https://www.postman.com)
+- [DrawSQL](https://drawsql.app/login)
+- [ChatGPT](https://chatgpt.com)
+- [ClaudeAI](https://claude.ai)
+- [NPM](https://www.npmjs.com)
+- [GitHub](https://github.com)
+- [PhpMyAdmin](https://www.phpmyadmin.net)
 
 
