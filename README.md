@@ -14,27 +14,6 @@ Basszusgitár, Zongora, Szintetizátor, MIDI keyboard, Dob szett, Cintányér, S
 
 ## A projekt felépítése:
 ```bash
-FRONTEND
-├── images/ 
-├── productImages/
-├── public/  
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── css/
-│   ├── pages/
-│   └── App.js
-├── video/
-├── .gitignore
-├── downloadImages.js
-├── eslint.config.js
-├── index.html
-├── netlify.toml/
-├── package.json
-└── README.md
-├── vite.config.js
-
-
 BACKEND
 ├── config
 │   └── dotenvConfig.js
@@ -67,6 +46,33 @@ BACKEND
 <img width="1308" height="659" alt="image" src="https://github.com/user-attachments/assets/ebb98136-b424-4b7a-9ca6-f03935816443" />
 
 
+#### Felhasznált csomagok
+- bcryptjs
+- cookie-parser
+- cors
+- dotenv
+- express
+- jsonwebtoken
+- multer
+- mysql2
+- nodemon
+
+```bash
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.9.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.1.0",
+    "mysql2": "^3.17.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+```
 #### Felhasznált eszközök
 - [Visual Studio Code](https://code.visualstudio.com)
 - [Postman](https://www.postman.com)
