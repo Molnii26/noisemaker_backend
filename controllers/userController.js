@@ -6,7 +6,7 @@ const { findByEmail, createUser, createAdmin, modifyUser, modifyUserInAdmin, del
 const cookieOptions = {
     httpOnly: true,
     secure: true,
-    sameSite: 'lax',
+    sameSite: 'None',
     path: '/',
     maxAge: 1000 * 60 * 60 * 24 * 7
 }
@@ -18,7 +18,7 @@ async function getAllUsers(req, res) {
         return res.status(200).json(result);
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ error: 'Hiba a termékek lekérésénél' })
+        return res.status(500).json({ error: 'Hiba a felhasználók lekérésénél' })
 
     }
 }
