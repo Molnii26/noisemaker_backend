@@ -46,6 +46,9 @@ BACKEND
 <img width="1308" height="659" alt="image" src="https://github.com/user-attachments/assets/ebb98136-b424-4b7a-9ca6-f03935816443" />
 
 
+## Postman-tesztek
+[Megtekintés](https://documenter.getpostman.com/view/48108279/2sBXqJJzuu#8d2f2e16-8cc8-4c12-9cb8-9a715b535f26)
+
 #### Felhasznált csomagok
 - bcryptjs
 - cookie-parser
