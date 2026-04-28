@@ -63,7 +63,8 @@ BACKEND
 ├── server.js
 └── README.md
 ```
-##Adatbázis
+## Adatbázis
+<img width="1308" height="659" alt="image" src="https://github.com/user-attachments/assets/ebb98136-b424-4b7a-9ca6-f03935816443" />
 
 
 #### Felhasznált eszközök
@@ -71,7 +72,6 @@ BACKEND
 - [Postman](https://www.postman.com)
 - [DrawSQL](https://drawsql.app/login)
 - [ChatGPT](https://chatgpt.com)
-- [ClaudeAI](https://claude.ai)
 - [NPM](https://www.npmjs.com)
 - [GitHub](https://github.com)
 - [PhpMyAdmin](https://www.phpmyadmin.net)
