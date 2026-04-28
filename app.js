@@ -14,8 +14,10 @@ const cookieParser = require('cookie-parser')
 app.use(express.json())
 app.use(cookieParser())
 
+
+
 app.use(cors({
-    origin: ["http://localhost:5173", "https://nodejs304.dszcbaross.edu.hu"],
+    origin: ["http://localhost:5173", "https://noisemakerfrontend.netlify.app"],
     credentials: true
 }))
 
