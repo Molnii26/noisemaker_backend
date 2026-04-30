@@ -28,11 +28,11 @@ async function addProduct(req, res) {
          return res.status(400).json({ error: "Kép feltöltése kötelező" });
       }
 
-      const ProductIMG = req.file.filename;
+      const ProductIMG = req.file ? `/uploads/products/${req.file.filename}` : null
 
       const { insertId } = await createProduct(Product_Name, ProductDescription, ProductPrice, ProductIMG, Subcategory_Id, Stock)
 
-      return res.status(201).json({ message: "Termék sikeresen létrehozva", insertId });
+      return res.status(201).json({ message: "Termék sikeresen létrehozva", insertId, ProductIMG });
 
    } catch (err) {
       if (err.code === "ER_NO_REFERENCED_ROW_2") {
@@ -87,10 +87,10 @@ async function modifyProduct(req, res) {
       const { Product_Name, ProductDescription, ProductPrice, Subcategory_Id, Stock } = req.body;
       const { Product_Id } = req.params;
 
-      //Így marad meg a régi kép
       let ProductIMG = null;
+
       if (req.file) {
-         ProductIMG = req.file.filename;
+         ProductIMG = `/uploads/products/${req.file.filename}`;
       }
 
 
@@ -102,7 +102,7 @@ async function modifyProduct(req, res) {
          return res.status(400).json({ error: "Az ár nem lehet üres, illetve pozitív egész szám kell hogy legyen" })
       }
 
-      if (isNaN(Stock) || !Number.isInteger(Number(Stock)) || Stock.trim() === ""  || Stock < 0) {
+      if (isNaN(Stock) || !Number.isInteger(Number(Stock)) || Stock.trim() === "" || Stock < 0) {
          return res.status(400).json({ error: "A készlet nem lehet üres, illetve pozitív egész szám kell hogy legyen" })
       }
 
@@ -125,6 +125,8 @@ async function modifyProduct(req, res) {
       if (err.code == "ER_NO_REFERENCED_ROW_2") {
          return res.status(404).json({ error: "Nem létezik ilyen alkategória" })
       }
+      console.log(err);
+
       return res.status(500).json({ error: "Hiba a termék módosításánál", err });
    }
 }

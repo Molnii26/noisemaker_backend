@@ -12,7 +12,7 @@ router.get("/getSubcategoryItems/:Subcategory_Id", getSubcategoryItems)
 router.post("/addCategory", addCategory)
 router.post("/addSubcategory", addSubcategory)
 
-router.put("/modifySubcategoryName/:Subcategory_Id", modifySubcategory)
+router.put("/modifySubcategory/:Subcategory_Id", modifySubcategory)
 router.put("/modifyCategoryName/:Category_Id", modifyCategoryName)
 
 router.delete("/deleteSubcategory/:Subcategory_Id", deleteSubcategory)

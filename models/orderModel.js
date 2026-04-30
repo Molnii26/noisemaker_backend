@@ -36,7 +36,7 @@ async function allOrders() {
     const sql = 'SELECT * FROM `orders`'
     const [result] = await db.query(sql)
 
-    return result[0] || null
+    return result
 }
 
 //Saját rendelések lekérdezése

@@ -14,7 +14,12 @@ const cookieParser = require('cookie-parser')
 app.use(express.json())
 app.use(cookieParser())
 
+const path = require("path")
 
+app.use(
+    "/uploads/products",
+    express.static(path.join(process.cwd(), "uploads", "products"))
+)
 
 app.use(cors({
     origin: ["http://localhost:5173", "https://noisemakerfrontend.netlify.app"],

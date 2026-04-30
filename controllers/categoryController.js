@@ -134,8 +134,7 @@ async function modifySubcategory(req, res) {
         }
 
 
-        const result = await subcategoryModify(Category_Id, Subcategory_Id, Subcategory_Name)
-
+        const result = await subcategoryModify(Subcategory_Name, Category_Id, Subcategory_Id)
         if (result.affectedRows == 0) {
             return res.status(400).json({ error: "Nincs ilyen kategória vagy alkategória" })
         }
