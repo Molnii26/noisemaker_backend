@@ -3,9 +3,19 @@ const { createOrder, createOrderItems, deleteOrder, allOrders, myOrders, OrderTo
 
 //Rendelés hozzáadása
 async function addOrder(req, res) {
+    
     try {
         const User_Id = req.user.id
         const { PhoneNumber, Postal_Code, City, StreetHousenumber, items } = req.body
+
+ const postal = await findByPostalCode(Postal_Code)
+
+        if (!postal) {
+            return res.status(400).json({
+                error: "Hibás irányítószám"
+            })
+        }
+
 
         if (isNaN(Postal_Code)) {
             return res.status(400).json({ error: "Hibás irányítószám" })
@@ -14,17 +24,19 @@ async function addOrder(req, res) {
             return res.status(400).json({ error: "Az irányítószám 4 számból kell hogy álljon" })
         }
 
+
         if (!PhoneNumber || !Postal_Code || !City || !StreetHousenumber) {
             return res.status(400).json({ error: "Töltsd ki minden mezőt!" })
         }
         const { insertId } = await createOrder(User_Id, PhoneNumber, Postal_Code, City, StreetHousenumber)
 
         for (const item of items) {
+            Number(String(item.ProductPrice).replace(/\s/g, ''))
             await createOrderItems(
                 insertId,
                 item.Product_Id,
                 item.Quantity,
-                item.OrderPrice
+                item.ProductPrice
             )
         }
 

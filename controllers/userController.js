@@ -44,6 +44,8 @@ async function register(req, res) {
         return res.status(201).json({ message: "Sikeres Regisztráció", insertId })
 
     } catch (err) {
+        console.log(err);
+        
         return res.status(500).json({ error: "Hiba a regisztrációban", err })
     }
 

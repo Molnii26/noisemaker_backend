@@ -48,10 +48,16 @@ async function updateCartItemQuantity(Cart_Item_Id, Quantity) {
 
 //Kosár megtekintése
 async function showCartItems(User_Id) {
-    const sql = "SELECT products.Product_Name, products.ProductPrice, cart_items.Quantity FROM cart_items JOIN cart ON cart.Cart_Id = cart_items.Cart_Id JOIN products ON products.Product_Id = cart_items.Product_Id WHERE cart.User_Id = ?"
+    const sql = `
+        SELECT  cart_items.Cart_Item_Id, cart_items.Cart_Id, cart_items.Product_Id, products.Product_Name, products.ProductIMG, products.ProductPrice, cart_items.Quantity FROM cart_items JOIN cart ON cart.Cart_Id = cart_items.Cart_Id JOIN products ON products.Product_Id = cart_items.Product_Id WHERE cart.User_Id = ?`
+
     const [result] = await db.query(sql, [User_Id])
 
-    return result
+    return result.map(item => ({
+        ...item,
+        ProductPrice: Number(String(item.ProductPrice).replace(/\s/g, '')),
+        ProductIMG: item.ProductIMG
+    }))
 }
 
 //Kosár törlése

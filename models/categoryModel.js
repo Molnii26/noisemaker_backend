@@ -56,10 +56,10 @@ async function AllSubcategories() {
 }
 
 //Alkategória módosítása
-async function subcategoryModify(Category_Id, Subcategory_Name, Subcategory_Id) {
+async function subcategoryModify(Subcategory_Name, Category_Id, Subcategory_Id) {
 
-    const sql = 'UPDATE `subcategories` SET Category_Id = ?, `Subcategory_Name`= ? WHERE `Subcategory_Id` = ?'
-    const [result] = await db.query(sql, [Category_Id, Subcategory_Name, Subcategory_Id])
+    const sql = ' UPDATE subcategories SET Subcategory_Name = ?, Category_Id = ? WHERE Subcategory_Id = ?'
+    const [result] = await db.query(sql, [Subcategory_Name, Category_Id, Subcategory_Id])
 
     return { affectedRows: result.affectedRows }
 }
@@ -110,4 +110,4 @@ async function findBySubcategoryName(Subcategory_Name) {
 }
 
 
-module.exports = {findBySubcategoryName, findByCategoryName, createCategory, createSubcategory, findCategoryById, categoryNameModify, categoryDelete, findSubcategoryById, subcategoryModify, subcategoryDelete, AllCategories, AllSubcategories }
+module.exports = { findBySubcategoryName, findByCategoryName, createCategory, createSubcategory, findCategoryById, categoryNameModify, categoryDelete, findSubcategoryById, subcategoryModify, subcategoryDelete, AllCategories, AllSubcategories }

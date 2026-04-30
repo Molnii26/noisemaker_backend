@@ -39,11 +39,27 @@ async function productDelete(Product_Id) {
 
 //Termék módosítása
 async function productModify(Product_Name, ProductDescription, ProductPrice, ProductIMG, Subcategory_Id, Stock, Product_Id) {
+    let sql
+    let values
 
-    const sql = 'UPDATE `products` SET `Product_Name`= ?, `ProductDescription`= ?, `ProductPrice`= ?, `ProductIMG`= ?,`Subcategory_Id`= ? ,`Stock`= ? WHERE Product_Id = ?'
-    const [result] = await db.query(sql, [Product_Name, ProductDescription, ProductPrice, ProductIMG, Subcategory_Id, Stock, Product_Id])
+    if (ProductIMG) {
+        sql = `
+            UPDATE products 
+            SET Product_Name = ?, ProductDescription = ?, ProductPrice = ?, ProductIMG = ?, Subcategory_Id = ?, Stock = ?
+            WHERE Product_Id = ?
+        `
+        values = [Product_Name, ProductDescription, ProductPrice, ProductIMG, Subcategory_Id, Stock, Product_Id]
+    } else {
+        sql = `
+            UPDATE products 
+            SET Product_Name = ?, ProductDescription = ?, ProductPrice = ?, Subcategory_Id = ?, Stock = ?
+            WHERE Product_Id = ?
+        `
+        values = [Product_Name, ProductDescription, ProductPrice, Subcategory_Id, Stock, Product_Id]
+    }
 
-    return { affectedRows: result.affectedRows }
+    const [result] = await db.query(sql, values)
+    return result
 }
 
 
